@@ -16,6 +16,7 @@ A little capture tool for Windows to help with bug reports and demos
 
 ### Other to-do items
 
-* [ ] hover-help for buttons
+* [x] hover-help for buttons
 * [ ] close file without quitting
+* [ ] optimised output for gif (minimal area & longest delays)
 

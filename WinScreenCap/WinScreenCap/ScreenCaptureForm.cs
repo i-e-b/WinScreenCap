@@ -45,11 +45,15 @@ namespace WinScreenCap
 
         private void ChooseFile()
         {
+            if (_recordingTimer.Enabled) return;
+            
             var dialog = new SaveFileDialog();
             dialog.OverwritePrompt = true;
             dialog.DefaultExt = "gif";
             dialog.AddExtension = true;
+            dialog.Filter = "All files|*.*|GIF files|*.gif|MP4 Video files|*.mp4";
             var result = dialog.ShowDialog();
+            
             switch (result) {
                 case DialogResult.OK:
                 case DialogResult.Yes:
@@ -167,21 +171,40 @@ namespace WinScreenCap
             g.FillRectangle(b, x, y+2.5f, 7, 2);
         }
 
-        private void DrawHintText(Graphics g, string msg, int y)
-        {
-            var width = g.MeasureString(msg, Font).Width;
-            g.DrawString(msg, Font, Brushes.Black, Width - width - 10, y);
-        }
-
         private void DrawRecordIcon(Graphics g, int x, int y)
         {
-            g.DrawRectangle(Pens.Black, x, y, 11, 11);
-            if (_recordingTimer.Enabled) g.FillRectangle(Brushes.Black, x+2, y+2, 7, 7);
-            else g.FillEllipse(Brushes.Red, x+2, y+2, 7, 7);
+            var disallowed = _outputFile is null;
+            
+            if (_buttonHover == ButtonHover.ToggleRecord)
+            {
+                if (!disallowed) g.FillRectangle(Brushes.Tan, x,y, 12,12);
+                var msg = _recordingTimer.Enabled ? "Stop recording" : "Start recording";
+                if (_outputFile is null) msg += " (choose output first)";
+                DrawHintText(g, msg, y);
+            }
+            
+            var p = disallowed ? Pens.DarkGray : Pens.Black;
+            var b1 = disallowed ? Brushes.DarkGray : Brushes.Black;
+            var b2 = disallowed ? Brushes.DarkGray : Brushes.Red;
+            
+            g.DrawRectangle(p, x, y, 11, 11);
+            if (_recordingTimer.Enabled) g.FillRectangle(b1, x+2, y+2, 7, 7);
+            else g.FillEllipse(b2, x+2, y+2, 7, 7);
         }
 
-        private static void DrawPageIcon(Graphics g, int x, int y) {
-            var p = Pens.Black;
+        private void DrawPageIcon(Graphics g, int x, int y) {
+            var disallowed = _recordingTimer.Enabled;
+            
+            if (_buttonHover == ButtonHover.ChooseFile)
+            {
+                if (!disallowed) g.FillRectangle(Brushes.Tan, x,y, 12,12);
+                var msg = "Choose output file";
+                if (_recordingTimer.Enabled) msg += " (stop recording first)";
+                DrawHintText(g, msg, y);
+            }
+            
+            var p = disallowed ? Pens.DarkGray : Pens.Black;
+            
             g.DrawLine(p, x    , y     , x + 6, y);
             g.DrawLine(p, x + 9, y + 3 , x + 9, y + 11);
             g.DrawLine(p, x + 9, y + 11, x    , y + 11);
@@ -279,7 +302,11 @@ namespace WinScreenCap
             }
         }
 
-        
+        private void DrawHintText(Graphics g, string msg, int y)
+        {
+            var width = g.MeasureString(msg, Font).Width;
+            g.DrawString(msg, Font, Brushes.Black, Width - width - 10, y);
+        }
         private void MouseOver(ButtonHover state)
         {
             if (_buttonHover == state) return;

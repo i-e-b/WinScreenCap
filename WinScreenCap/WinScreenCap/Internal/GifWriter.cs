@@ -15,6 +15,7 @@ namespace WinScreenCap.Internal
         private readonly Size _size;
         private readonly bool _drawCursor;
         private readonly Bitmap _screenBuffer; // Input image captured from the screen
+        private readonly Bitmap _quantisedBuffer; // Input image captured from the screen
         private readonly MemoryStream _buffer;
 
         private readonly byte[] _applicationExtension = {
@@ -50,6 +51,8 @@ namespace WinScreenCap.Internal
                  0     //Block terminator
             };
 
+        private readonly ImageQuantise _quantiser;
+
         /// <summary>
         /// Start an animated GIF with the given size and file name.
         /// Will immediately open the file, but headers are written on first frame
@@ -67,8 +70,10 @@ namespace WinScreenCap.Internal
             // we do it this way to get the same pixel format as the screen.
             using var g = Graphics.FromHwnd(IntPtr.Zero);
             _screenBuffer = new Bitmap(size.Width, size.Height, g);
+            _quantisedBuffer = new Bitmap(size.Width, size.Height, PixelFormat.Format8bppIndexed);
+            _quantiser = new ImageQuantise(_quantisedBuffer);
         }
-
+        
         public void Close()
         {
             if (_fileStream == null) { return; }
@@ -110,9 +115,10 @@ namespace WinScreenCap.Internal
         {
             _buffer.SetLength(0);
 
-            ImageQuantise.RescaleImage(frame, 255); // this is a rough way of reducing the color count of the frame
-            frame.Save(_buffer, ImageFormat.Gif); // TODO: better quantise, and better color palette use
 
+            _quantiser.RescaleImage(frame); // reduce the color count of the frame, prevent GDI from dithering
+            _quantisedBuffer.Save(_buffer, ImageFormat.Gif);
+            
             var gifFrame = _buffer.ToArray();
 
             if (_firstFrame)
@@ -125,6 +131,11 @@ namespace WinScreenCap.Internal
 
             _fileWriter.Write(_graphicControlExtension, 0, 8); //Graphic extension. TODO: frame duration
             _fileWriter.Write(gifFrame, 789, gifFrame.Length - 790); //Image data (with duplicated headers chopped out)
+        }
+
+        private void Quantise(Bitmap frame, Bitmap quantisedBuffer)
+        {
+            
         }
     }
 }

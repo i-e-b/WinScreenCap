@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace WinScreenCap.Internal
 {
-    public class GifWriter : IDisposable
+    public class GifWriter : IFrameWriter
     {
         private FileStream? _fileStream;
         private readonly BinaryWriter _fileWriter;

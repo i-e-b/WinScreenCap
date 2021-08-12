@@ -10,10 +10,11 @@ namespace WinScreenCap
 {
     public class ScreenCaptureForm : OverlayForm
     {
-        private GifWriter? _outputFile;
+        private IFrameWriter? _outputFile;
         private bool _disposed;
         private readonly Timer _recordingTimer;
         private const int Fps20 = 50;//ms
+        private ButtonHover _buttonHover;
 
         public ScreenCaptureForm()
         {
@@ -39,6 +40,7 @@ namespace WinScreenCap
             _disposed = true;
             _outputFile?.Dispose();
             base.OnClosed(e);
+            Application.Exit();
         }
 
         private void ChooseFile()
@@ -139,9 +141,21 @@ namespace WinScreenCap
             return b;
         }
 
-        private static void DrawSnapFrameIcon(Graphics g, int x, int y)
+        private void DrawSnapFrameIcon(Graphics g, int x, int y)
         {
-            var p = Pens.Black;
+            var disallowed = _outputFile is null || _recordingTimer.Enabled;
+            
+            if (_buttonHover == ButtonHover.AddFrame)
+            {
+                if (!disallowed) g.FillRectangle(Brushes.Tan, x,y, 12,12);
+                var msg = "Add single frame";
+                if (_recordingTimer.Enabled) msg += " (stop recording first)";
+                if (_outputFile is null) msg += " (choose output first)";
+                DrawHintText(g, msg, y);
+            }
+
+            var p = disallowed ? Pens.DarkGray : Pens.Black;
+            var b = disallowed ? Brushes.DarkGray : Brushes.Black;
             g.DrawRectangle(p, x, y, 7, 7);
             
             g.DrawLine(p, x+11, y, x+11, y+11);
@@ -149,8 +163,14 @@ namespace WinScreenCap
             g.DrawLine(p, x + 9, y, x + 9, y + 9);
             g.DrawLine(p, x, y + 9, x + 9, y + 9);
 
-            g.FillRectangle(Brushes.Black, x+2.5f, y, 2, 7);
-            g.FillRectangle(Brushes.Black, x, y+2.5f, 7, 2);
+            g.FillRectangle(b, x+2.5f, y, 2, 7);
+            g.FillRectangle(b, x, y+2.5f, 7, 2);
+        }
+
+        private void DrawHintText(Graphics g, string msg, int y)
+        {
+            var width = g.MeasureString(msg, Font).Width;
+            g.DrawString(msg, Font, Brushes.Black, Width - width - 10, y);
         }
 
         private void DrawRecordIcon(Graphics g, int x, int y)
@@ -196,14 +216,27 @@ namespace WinScreenCap
                         var c = PointToClient(GetPoint(m.LParam));
                         var sizeEnabled = _outputFile == null; // disable resize once we start a file
 
-                        if (sizeEnabled && c.X > Width - 10 && c.Y > Height - 10) m.Result = Win32.Win32.HTBOTTOMRIGHT;
+                        if (sizeEnabled && c.X > Width - 10 && c.Y > Height - 10)
+                        {
+                            m.Result = Win32.Win32.HTBOTTOMRIGHT;
+                            MouseOver(ButtonHover.None);
+                        }
                         else if (
                             InRect(c, 0, 0, 10, 10) ||
                             InRect(c, 10, Height - 17, 22, Height) ||
                             InRect(c, 25, Height - 17, 37, Height) ||
                             InRect(c, 40, Height - 17, 52, Height)
-                            ) m.Result = Win32.Win32.HTCLIENT; // If you don't return HTCLIENT, you won't get the button events
-                        else m.Result = Win32.Win32.HTCAPTION;
+                        )
+                        {
+                            m.Result = Win32.Win32.HTCLIENT; // If you don't return HTCLIENT, you won't get the button events
+                            MouseOver(ButtonHover.None);
+                        }
+                        else
+                        {
+                            m.Result = Win32.Win32.HTCAPTION;
+                            MouseOver(ButtonHover.None);
+                        }
+
                         return;
                     }
                 case Win32.Win32.WM_LBUTTONUP: // client-space coords
@@ -221,10 +254,37 @@ namespace WinScreenCap
                         base.WndProc(ref m);
                         return;
                     }
+                case Win32.Win32.WM_MOUSEMOVE:
+                {
+                    var c = GetPoint(m.LParam);
+                    
+                    if (InRect(c, 10, Height - 17, 22, Height)) { MouseOver(ButtonHover.ChooseFile); }
+                    else if (InRect(c, 25, Height - 17, 37, Height)) { MouseOver(ButtonHover.ToggleRecord); }
+                    else if (InRect(c, 40, Height - 17, 52, Height)) { MouseOver(ButtonHover.AddFrame); }
+                    else { MouseOver(ButtonHover.None); }
+
+                    base.WndProc(ref m);
+                    return;
+                }
+                case Win32.Win32.WM_MOUSELEAVE:
+                case Win32.Win32.WM_NCMOUSELEAVE:
+                {
+                    MouseOver(ButtonHover.None);
+                    base.WndProc(ref m);
+                    return;
+                }
                 default:
                     base.WndProc(ref m);
                     return;
             }
+        }
+
+        
+        private void MouseOver(ButtonHover state)
+        {
+            if (_buttonHover == state) return;
+            _buttonHover = state;
+            Invalidate();
         }
 
         private static Point GetPoint(IntPtr packed)
@@ -233,5 +293,10 @@ namespace WinScreenCap
             int y = (short)((packed.ToInt32() & 0xFFFF0000) >> 16);
             return new Point(x, y);
         }
+    }
+
+    internal enum ButtonHover
+    {
+        None, ChooseFile, ToggleRecord, AddFrame
     }
 }

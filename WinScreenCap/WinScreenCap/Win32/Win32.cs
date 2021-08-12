@@ -183,6 +183,8 @@ namespace WinScreenCap.Win32 {
         public const int WM_LEFTBUTTONDOWN = 0x0201;
         public const int WM_LBUTTONUP = 0x0202;
         public const int WM_MOUSEMOVE = 0x0200;
+        public const int WM_NCMOUSELEAVE = 0x02A2;
+        public const int WM_MOUSELEAVE = 0x02A3;
         public const int WM_MOUSEWHEEL = 0x020A;
         public const int WM_RIGHTBUTTONDOWN = 0x0204;
         public const int WM_RIGHTBUTTONUP = 0x0205;

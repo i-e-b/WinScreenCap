@@ -30,7 +30,10 @@ namespace WinScreenCap.Internal
             
             _writerFrame = new Mat(size, DepthType.Cv8U, 3);
             _frameImage = new Bitmap(size.Width, size.Height, PixelFormat.Format24bppRgb);
-            _writer = new VideoWriter(fileName, backendId, compressionType, FramesPerSecond, size, isColor: true);
+            _writer = new VideoWriter(fileName, backendId, compressionType, FramesPerSecond, size,
+                new Tuple<VideoWriter.WriterProperty, int>(VideoWriter.WriterProperty.Quality, 50), // this does nothing. https://github.com/opencv/opencv/issues/8961
+                new Tuple<VideoWriter.WriterProperty, int>(VideoWriter.WriterProperty.IsColor,1)
+            );
         }
 
         public void WriteScreenFrame(Point topLeft)
@@ -38,11 +41,7 @@ namespace WinScreenCap.Internal
             using var g = Graphics.FromImage(_frameImage);
             g.CopyFromScreen(topLeft, Point.Empty, _size);
             
-            if (_drawCursor && Cursor.Current is not null) { // this doesn't draw the correct cursor, but at least it shows *something*
-                var pt = new Point(Cursor.Position.X - topLeft.X - Cursor.Current.HotSpot.X, Cursor.Position.Y - topLeft.Y - Cursor.Current.HotSpot.Y);
-                var rect = new Rectangle(pt, Cursor.Current.Size);
-                Cursor.Current.Draw(g, rect);
-            }
+            if (_drawCursor) { WindowsCursor.Draw(g,topLeft); }
             
             CopyFrame(_frameImage, _writerFrame);
             _writer.Write(_writerFrame);

@@ -12,8 +12,10 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/316ab4516b8140e7b94d342a1f91d04ef6d78/12/Graphics.Windows.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/85279f47b6b245358323a51e4e3a400cceba0/fb/3637d79d/VideoWriter.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/316ab4516b8140e7b94d342a1f91d04ef6d78/73/ColorPalette.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/e6e6b40b308c4fe19c937c26c144c8658f5388/94/Int32.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/f9562b2bc5f243379c6149629d8a2b87c65b80/44/Cursor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/316ab4516b8140e7b94d342a1f91d04ef6d78/11/Graphics.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/316ab4516b8140e7b94d342a1f91d04ef6d80/15/Image.Windows.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
@@ -59,7 +61,7 @@
       <updated>1628754250511</updated>
       <workItem from="1628754263570" duration="15785000" />
       <workItem from="1628845105402" duration="4286000" />
-      <workItem from="1628859384181" duration="683000" />
+      <workItem from="1628859384181" duration="5804000" />
     </task>
     <servers />
   </component>

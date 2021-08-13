@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
-using System.Windows.Forms;
 
 namespace WinScreenCap.Internal
 {
@@ -102,11 +101,7 @@ namespace WinScreenCap.Internal
             {
                 g.CopyFromScreen(topLeft, Point.Empty, _size);
 
-                if (_drawCursor && Cursor.Current is not null) { // this doesn't draw the correct cursor, but at least it shows *something*
-                    var pt = new Point(Cursor.Position.X - topLeft.X - Cursor.Current.HotSpot.X, Cursor.Position.Y - topLeft.Y - Cursor.Current.HotSpot.Y);
-                    var rect = new Rectangle(pt, Cursor.Current.Size);
-                    Cursor.Current.Draw(g, rect);
-                }
+                if (_drawCursor) { WindowsCursor.Draw(g,topLeft); }
             }
             WriteImageFrame(_screenBuffer);
         }

@@ -531,6 +531,11 @@ namespace WinScreenCap.Win32 {
 		public delegate int HookProc (int nCode, Int32 wParam, IntPtr lParam);
 		#endregion
 
+		[DllImport("user32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool GetCursorPos(out Point lpPoint);
 
-    }
+		[DllImport("user32.dll")]
+		public static extern IntPtr WindowFromPoint(Point lpPoint);
+	}
 }

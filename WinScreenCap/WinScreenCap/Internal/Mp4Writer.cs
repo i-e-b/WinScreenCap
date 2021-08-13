@@ -51,16 +51,45 @@ namespace WinScreenCap.Internal
         private static unsafe void CopyFrame(Bitmap? src, Mat? dst)
         {
             if (src == null || dst == null) return;
-            var bits = src.LockBits(new Rectangle(0,0, src.Width, src.Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+            var srcBitmapData = src.LockBits(new Rectangle(0,0, src.Width, src.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppPArgb);
             try
             {
-                var length = bits.Stride * bits.Height;
-                Buffer.MemoryCopy(bits.Scan0.ToPointer()!, dst.DataPointer.ToPointer()!, length, length);
+                // Get the pointer to the image bits.
+                PBits(srcBitmapData, srcBitmapData.Scan0, srcBitmapData.Height, out var srcBits, out var srcStride);
+                var width = Math.Min(srcBitmapData.Width, dst.Width);
+                var height = Math.Min(srcBitmapData.Height, dst.Height);
+
+                for (int y = 0; y < height; y++)
+                {
+                    var srcBase = srcBits + (srcStride * y);
+                    var dstBase = (byte*)dst.DataPointer.ToPointer() + (dst.Width * y * 3  /*bytes per pixel*/);
+                    for (int x = 0; x < width; x++)
+                    {
+                        *dstBase++ = *srcBase++;
+                        *dstBase++ = *srcBase++;
+                        *dstBase++ = *srcBase++;
+                        srcBase++;
+                    }
+                }
             }
             finally
             {
-                src.UnlockBits(bits);
+                src.UnlockBits(srcBitmapData);
             }
+        }
+        
+        private static unsafe void PBits(BitmapData srcBitmapData, IntPtr srcPixels, int height, out byte* pBits, out uint stride)
+        {
+            // This is the unsafe operation.
+            if (srcBitmapData.Stride > 0)
+                pBits = (byte*)srcPixels.ToPointer();
+            else
+                // If the Stride is negative, Scan0 points to the last 
+                // scanline in the buffer. To normalize the loop, obtain
+                // a pointer to the front of the buffer that is located 
+                // (Height-1) scan-lines previous.
+                pBits = (byte*)srcPixels.ToPointer() + srcBitmapData.Stride * (height - 1);
+            stride = (uint)Math.Abs(srcBitmapData.Stride);
         }
 
         public void Dispose()

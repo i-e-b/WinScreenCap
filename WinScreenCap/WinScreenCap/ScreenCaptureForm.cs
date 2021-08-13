@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
+using System.IO;
 using System.Windows.Forms;
 using WinScreenCap.Internal;
 
@@ -59,9 +60,19 @@ namespace WinScreenCap
                 case DialogResult.Yes:
                     {
                         _outputFile?.Dispose();
+                        _outputFile = null;
+                        
                         if (!string.IsNullOrWhiteSpace(dialog.FileName))
                         {
-                            _outputFile = new GifWriter(dialog.FileName, new Size(Width - 21, Height - 31), true);
+                            var fileExt = Path.GetExtension(dialog.FileName).ToLowerInvariant();
+                            
+                            _outputFile = fileExt switch
+                            {
+                                ".gif" => new GifWriter(dialog.FileName, new Size(Width - 21, Height - 31), true),
+                                ".mp4" => new Mp4Writer(dialog.FileName, new Size(Width - 21, Height - 31), true),
+                                _ => null
+                            };
+
                             UpdateOverlay();
                         }
                         break;

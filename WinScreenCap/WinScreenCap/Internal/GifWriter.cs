@@ -132,10 +132,5 @@ namespace WinScreenCap.Internal
             _fileWriter.Write(_graphicControlExtension, 0, 8); //Graphic extension. TODO: frame duration
             _fileWriter.Write(gifFrame, 789, gifFrame.Length - 790); //Image data (with duplicated headers chopped out)
         }
-
-        private void Quantise(Bitmap frame, Bitmap quantisedBuffer)
-        {
-            
-        }
     }
 }

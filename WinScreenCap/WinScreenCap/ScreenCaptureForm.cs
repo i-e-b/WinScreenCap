@@ -47,7 +47,15 @@ namespace WinScreenCap
         private void ChooseFile()
         {
             if (_recordingTimer.Enabled) return;
-            
+
+            if (_outputFile != null)
+            {
+                _outputFile?.Dispose();
+                _outputFile = null;
+                UpdateOverlay();
+                return;
+            }
+
             var dialog = new SaveFileDialog();
             dialog.OverwritePrompt = true;
             dialog.DefaultExt = "gif";
@@ -145,7 +153,7 @@ namespace WinScreenCap
                 g.DrawLine(Pens.Black, 2, 9, 9, 2);
 
                 // Set file icon
-                DrawPageIcon(g, 10, Height - 17);
+                DrawFileIcon(g, 10, Height - 17);
 
                 // record icon
                 DrawRecordIcon(g, 25, Height - 17);
@@ -203,10 +211,16 @@ namespace WinScreenCap
             else g.FillEllipse(b2, x+2, y+2, 7, 7);
         }
 
-        private void DrawPageIcon(Graphics g, int x, int y) {
+        private void DrawFileIcon(Graphics g, int x, int y)
+        {
+            if (_outputFile == null) DrawChooseFileIcon(g,x,y);
+            else DrawCloseFileIcon(g,x,y);
+        }
+
+        private void DrawChooseFileIcon(Graphics g, int x, int y) {
             var disallowed = _recordingTimer.Enabled;
             
-            if (_buttonHover == ButtonHover.ChooseFile)
+            if (_buttonHover == ButtonHover.File)
             {
                 if (!disallowed) g.FillRectangle(Brushes.Tan, x,y, 12,12);
                 var msg = "Choose output file";
@@ -224,6 +238,32 @@ namespace WinScreenCap
             g.DrawLine(p, x + 6, y  , x + 6, y + 3);
             g.DrawLine(p, x + 6, y  , x + 9, y + 3);
             g.DrawLine(p, x + 6, y+3, x + 9, y + 3);
+        }
+        
+        private void DrawCloseFileIcon(Graphics g, int x, int y) {
+            var disallowed = _recordingTimer.Enabled;
+            
+            if (_buttonHover == ButtonHover.File)
+            {
+                if (!disallowed) g.FillRectangle(Brushes.Tan, x,y, 12,12);
+                var msg = "Close output file";
+                if (disallowed) msg += " (stop recording first)";
+                DrawHintText(g, msg, y);
+            }
+            
+            var p = disallowed ? Pens.DarkGray : Pens.Black;
+            
+            g.DrawLine(p, x    , y     , x + 6, y);
+            g.DrawLine(p, x + 9, y + 3 , x + 9, y + 11);
+            g.DrawLine(p, x + 9, y + 11, x    , y + 11);
+            g.DrawLine(p, x    , y + 11, x    , y);
+
+            g.DrawLine(p, x + 6, y  , x + 6, y + 3);
+            g.DrawLine(p, x + 6, y  , x + 9, y + 3);
+            g.DrawLine(p, x + 6, y+3, x + 9, y + 3);
+            
+            g.DrawLine(p, x    , y  , x + 11, y + 11);
+            g.DrawLine(p, x +11, y  , x     , y + 11);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -292,7 +332,7 @@ namespace WinScreenCap
                 {
                     var c = GetPoint(m.LParam);
                     
-                    if (InRect(c, 10, Height - 17, 22, Height)) { MouseOver(ButtonHover.ChooseFile); }
+                    if (InRect(c, 10, Height - 17, 22, Height)) { MouseOver(ButtonHover.File); }
                     else if (InRect(c, 25, Height - 17, 37, Height)) { MouseOver(ButtonHover.ToggleRecord); }
                     else if (InRect(c, 40, Height - 17, 52, Height)) { MouseOver(ButtonHover.AddFrame); }
                     else { MouseOver(ButtonHover.None); }
@@ -335,6 +375,6 @@ namespace WinScreenCap
 
     internal enum ButtonHover
     {
-        None, ChooseFile, ToggleRecord, AddFrame
+        None, File, ToggleRecord, AddFrame
     }
 }

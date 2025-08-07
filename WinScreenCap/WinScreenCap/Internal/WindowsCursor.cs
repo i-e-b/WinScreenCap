@@ -6,8 +6,9 @@ namespace WinScreenCap.Internal
 {
     internal static class WindowsCursor
     {
-        private static readonly Brush _backFill = new SolidBrush(Color.FromArgb(80,0,0,0));
-        
+        private static readonly Brush _mouseAreaFill = new SolidBrush(Color.FromArgb(80,0,0,0));
+        private static readonly Pen _mouseAreaLine = new Pen(Color.FromArgb(255-80,0,0,0), 2.0f);
+
         public static void Draw(Graphics g, Point topLeft)
         {
             // Try to get the correct cursor (the hard way)
@@ -22,7 +23,9 @@ namespace WinScreenCap.Internal
 
                 // dotnet Cursor.Draw doesn't handle XOR cursors properly -- they come out white.
                 // so we hack it by drawing an oval behind the cursor
-                g.FillEllipse(_backFill, cursX - hw, cursY - hh, cursor.Size.Width, cursor.Size.Height);
+                g.FillEllipse(_mouseAreaFill, cursX - hw, cursY - hh, cursor.Size.Width, cursor.Size.Height);
+                if (Program.MouseDown)
+                    g.DrawEllipse(_mouseAreaLine, cursX - hw, cursY - hh, cursor.Size.Width, cursor.Size.Height);
                 
                 var rect = new Rectangle(pt, cursor.Size);
                 cursor.Draw(g, rect);

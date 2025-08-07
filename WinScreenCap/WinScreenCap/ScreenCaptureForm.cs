@@ -30,6 +30,15 @@ namespace WinScreenCap
             UpdateOverlay();
         }
 
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                e.SuppressKeyPress = true;
+                AddFrame();
+            }
+        }
+
         private void _recordingTimer_Tick(object? sender, EventArgs e)
         {
             _outputFile?.WriteScreenFrame(new Point(Left + 11, Top + 11));
@@ -171,7 +180,7 @@ namespace WinScreenCap
             if (_buttonHover == ButtonHover.AddFrame)
             {
                 if (!disallowed) g.FillRectangle(Brushes.Tan, x,y, 12,12);
-                var msg = "Add single frame";
+                var msg = "Add single frame (ctrl-C)";
                 if (_recordingTimer.Enabled) msg += " (stop recording first)";
                 if (_outputFile is null) msg += " (choose output first)";
                 DrawHintText(g, msg, y);

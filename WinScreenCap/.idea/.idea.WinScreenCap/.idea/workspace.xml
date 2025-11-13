@@ -9,6 +9,7 @@
   <component name="ChangeListManager">
     <list default="true" id="eb5bbf32-bd72-4a7d-a11b-50fd103d4590" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.WinScreenCap/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.WinScreenCap/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WinScreenCap/ImageTransforms/QrCodeScanner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WinScreenCap/ImageTransforms/QrCodeScanner.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WinScreenCap/ScreenCaptureForm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WinScreenCap/ScreenCaptureForm.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WinScreenCap/WinScreenCap.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/WinScreenCap/WinScreenCap.csproj" afterDir="false" />
     </list>
@@ -24,6 +25,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/199a8068e72d4e7c9b7399f0b574749f7e000/15/e3f8d290/DecodingOptions.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/199a8068e72d4e7c9b7399f0b574749f7e000/41/ca020123/PlanarYUVLuminanceSource.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/199a8068e72d4e7c9b7399f0b574749f7e000/48/32652a31/BarcodeReader`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/199a8068e72d4e7c9b7399f0b574749f7e000/4c/9eafe9e5/BarcodeReaderGeneric.cs" root0="FORCE_HIGHLIGHTING" />
@@ -31,6 +33,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/478cd37a9cf5552e58e069a6aafb2a112b89b262faef3cfb5054d65b1ea95345/ThreadPoolWorkQueue.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/6b459ab4c8d9f7fb58928f181546655e83988835c67767c083d42fceaa46a41/Rectangle.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/WinScreenCap/ImageTransforms/QrCodeScanner.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/WinScreenCap/ImageTransforms/UnsharpThreshold.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -105,7 +108,7 @@
       <workItem from="1713800642607" duration="462000" />
       <workItem from="1754556866420" duration="1369000" />
       <workItem from="1763034591845" duration="6779000" />
-      <workItem from="1763042164390" duration="1427000" />
+      <workItem from="1763042164390" duration="3244000" />
     </task>
     <servers />
   </component>

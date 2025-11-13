@@ -25,11 +25,11 @@ namespace WinScreenCap
         private readonly Timer         _uiActionTimer;
         private readonly Queue<Action> _uiActions = new();
 
-        private Rectangle _closeIconRect     = new();
-        private Rectangle _snapFrameIconRect = new();
-        private Rectangle _fileIconRect      = new();
-        private Rectangle _recordIconRect    = new();
-        private Rectangle _scanCodeIconRect    = new();
+        private Rectangle _closeIconRect;
+        private Rectangle _snapFrameIconRect;
+        private Rectangle _fileIconRect;
+        private Rectangle _recordIconRect;
+        private Rectangle _scanCodeIconRect;
 
         public ScreenCaptureForm()
         {
@@ -102,7 +102,7 @@ namespace WinScreenCap
             else
             {
                 Clipboard.SetText(result);
-                MessageBox.Show($"Found '{result}'\r\n\r\nAdded to clipboard.", "Barcode Scan", MessageBoxButtons.OK);
+                MessageBox.Show($"Found and copied:\r\n\r\n{result}", "Barcode Scan", MessageBoxButtons.OK);
             }
         }
 

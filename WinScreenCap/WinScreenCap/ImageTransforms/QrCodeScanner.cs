@@ -30,13 +30,33 @@ public class QrCodeScanner
 
         GetLuminanceFromBitmap(_screenBuffer, out var luminance);
 
-        var lumSrc = new PlanarYUVLuminanceSource(luminance, size.Width, size.Height, 0, 0, size.Width, size.Height, false);
-
         var reader = new BarcodeReaderGeneric();
         reader.Options.TryHarder = true;
-        var result = reader.Decode(lumSrc);
+        reader.Options.PossibleFormats = [BarcodeFormat.CODE_128, BarcodeFormat.CODE_39, BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX];
 
-        return result?.Text;
+        // First try without anything special:
+        {
+            var lumSrc = new PlanarYUVLuminanceSource(luminance, size.Width, size.Height, 0, 0, size.Width, size.Height, false);
+            var result = reader.Decode(lumSrc);
+            if (result is not null) return result.Text;
+        }
+
+        // do our own thresholding
+        for (var scale = 4; scale > 1; scale--)
+        {
+            for (var exposure = -4; exposure < 12; exposure += 2)
+            {
+                var matrix = UnsharpThreshold.Matrix(luminance, size.Width, size.Height, false, scale, exposure);
+
+                var lumSrc = new PlanarYUVLuminanceSource(matrix, size.Width, size.Height, 0, 0, size.Width, size.Height, false);
+
+                var result = reader.Decode(lumSrc);
+
+                if (result is not null) return result.Text;
+            }
+        }
+
+        return null;
     }
 
     private static unsafe void GetLuminanceFromBitmap(Bitmap src, out byte[] luminance)

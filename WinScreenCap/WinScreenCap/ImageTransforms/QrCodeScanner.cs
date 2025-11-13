@@ -7,7 +7,7 @@ namespace WinScreenCap.ImageTransforms;
 /// <summary>
 /// Tries to read QR codes from the screen
 /// </summary>
-public class QrCodeScanner
+public static class QrCodeScanner
 {
     private static Bitmap? _screenBuffer;
 

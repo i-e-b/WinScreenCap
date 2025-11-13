@@ -11,8 +11,8 @@ public static class UnsharpThreshold
     private const int UpperLimit = 240;
     private const int LowerLimit = 16;
 
-    private static int[]  columns = [];
-    private static byte[] results = [];
+    private static int[]  _columns = [];
+    private static byte[] _results = [];
 
     /// <summary>
     /// Threshold an entire bitmap, returning a new bitmap
@@ -25,8 +25,8 @@ public static class UnsharpThreshold
     /// <param name="width">width of source</param>
     public static byte[] Matrix(byte[] src, int width, int height, bool invert, int scale, int exposure)
     {
-        if (columns.Length < src.Length) columns = new int[src.Length + 32];
-        if (results.Length < src.Length) results = new byte[src.Length + 32];
+        if (_columns.Length < src.Length) _columns = new int[src.Length + 32];
+        if (_results.Length < src.Length) _results = new byte[src.Length + 32];
 
         byte white = 255;
         byte black = 0;
@@ -57,7 +57,7 @@ public static class UnsharpThreshold
             var end = src.Length - x - 1;
             row = 0;
             for (var y = 0; y < height; y++) {
-                columns[row + x] = sum >> diam;
+                _columns[row + x] = sum >> diam;
 
                 // update running average
                 var yr       = Math.Min(row + span, end);
@@ -65,7 +65,7 @@ public static class UnsharpThreshold
                 var incoming = src[yr + x];
                 var outgoing = src[yl + x];
 
-                sum += (int)incoming - (int)outgoing;
+                sum += incoming - outgoing;
                 row += width;
             }
         }
@@ -77,7 +77,7 @@ public static class UnsharpThreshold
             // feed in
             for (var i = -radius; i < radius; i++) {
                 var x = Math.Max(i, 0);
-                sum += columns[yOff + x];
+                sum += _columns[yOff + x];
             }
 
             // running average threshold
@@ -91,18 +91,18 @@ public static class UnsharpThreshold
                 if (target < LowerLimit) target = LowerLimit;
 
                 // Decide what side of the threshold we are on
-                results[yOff + x] = actual < target ? black : white;
+                _results[yOff + x] = actual < target ? black : white;
 
                 // update running average
                 var xr = Math.Min(x + radius, right);
                 var xl = Math.Max(x - radius, 0);
-                var incoming = columns[yOff + xr];
-                var outgoing = columns[yOff + xl];
+                var incoming = _columns[yOff + xr];
+                var outgoing = _columns[yOff + xl];
 
                 sum += incoming - outgoing;
             }
         }
 
-        return results;
+        return _results;
     }
 }
